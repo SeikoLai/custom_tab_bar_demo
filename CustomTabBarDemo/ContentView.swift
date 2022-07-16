@@ -40,8 +40,8 @@ struct FloatingTabBar: View {
             // custom tab bar
             HStack(spacing: 0) {
                 ForEach(tabs, id: \.self) { image in
+                    let isSelectedTab: Bool = selectedTab == image
                     GeometryReader { reader in
-                        Spacer()
                         Button(action: {
                             selectedTab = image
                             xAxis = reader.frame(in: .global).minX
@@ -49,13 +49,13 @@ struct FloatingTabBar: View {
                             Image(systemName: image)
                                 .resizable()
                                 .renderingMode(.template)
-                                .aspectRatio(contentMode: .fit)
+                                .aspectRatio(contentMode: .fill)
                                 .frame(width: buttonDimension, height:  buttonDimension)
-                                .foregroundColor(selectedTab == image ? .white: .black)
-                                .padding(selectedTab == image ? 15.0 : 0.0)
-                                .background(Color.orange.opacity(selectedTab == image ? 1 : 0).clipShape(Circle()))
+                                .foregroundColor(isSelectedTab ? .white: .black)
+                                .padding(isSelectedTab ? 15.0 : 0.0)
+                                .background(Color.orange.opacity(isSelectedTab ? 1 : 0).clipShape(Circle()))
                                 .matchedGeometryEffect(id: image, in: animation)
-                                .offset(x: selectedTab == image ? -10 : 0, y: selectedTab == image ? -50: 0)
+                                .offset(x: isSelectedTab ? -10 : 0, y: isSelectedTab ? -50: 0)
                         })
                             .onAppear(perform: {
                                 if image == tabs.first {
@@ -64,13 +64,12 @@ struct FloatingTabBar: View {
                             })
                     }
                     .frame(width: 25.0, height: 30.0)
-//                    if image != tabs.last { Spacer() }
-                    Spacer()
+                    if image != tabs.last { Spacer() }
                 }
             }
-            .padding(.horizontal, 30)
+            .padding(.horizontal, 50)
             .padding(.vertical)
-            .background(Color.white.clipShape(CustomShape(xAxis: xAxis)).cornerRadius(12.0))
+            .background(Color.white.clipShape(CustomShape(xAxis: xAxis)).cornerRadius(20.0))
             .padding(.horizontal)
             // button edge
             .padding(.bottom, UIApplication.shared.windows.first?.safeAreaInsets.bottom)
