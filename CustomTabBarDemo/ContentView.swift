@@ -8,9 +8,15 @@
 import SwiftUI
 
 struct FloatingTabBar: View {
-    var tabs = ["house.fill", "arrow.triangle.2.circlepath", "person.fill"]
+    // System image name
+    static private let home: String = "house.fill"
+    static private let activity: String = "arrow.triangle.2.circlepath"
+    static private let member = "person.fill"
+    static private let checkmark = "checkmark"
     
-    @State var selectedTab = "arrow.triangle.2.circlepath"
+    var tabs = [FloatingTabBar.home, FloatingTabBar.activity, FloatingTabBar.member]
+    
+    @State var selectedTab = FloatingTabBar.activity
     
     // Location of each curve
     @State var xAxis: CGFloat = 0
@@ -34,13 +40,13 @@ struct FloatingTabBar: View {
             TabView(selection: $selectedTab) {
                 Color(.black)
                     .ignoresSafeArea(.all, edges: .all)
-                    .tag("house.fill")
+                    .tag(FloatingTabBar.home)
                 Color(.lightGray)
                     .ignoresSafeArea(.all, edges: .all)
-                    .tag("arrow.triangle.2.circlepath")
+                    .tag(FloatingTabBar.activity)
                 Color(.gray)
                     .ignoresSafeArea(.all, edges: .all)
-                    .tag("person.fill")
+                    .tag(FloatingTabBar.member)
             }
             
             // custom tab bar
@@ -49,12 +55,12 @@ struct FloatingTabBar: View {
                     let isSelectedTab: Bool = selectedTab == image
                     GeometryReader { reader in
                         Button(action: {
-                            if image == "arrow.triangle.2.circlepath" {
+                            if image == FloatingTabBar.activity {
                                 isAnimating.toggle()
                             }
                         }, label:{
                             if isAnimating {
-                                Image(systemName: image == "arrow.triangle.2.circlepath" ? "checkmark" : image)
+                                Image(systemName: image == FloatingTabBar.activity ? FloatingTabBar.checkmark : image)
                                     .resizable()
                                     .renderingMode(.template)
                                     .aspectRatio(contentMode: .fill)
@@ -65,7 +71,6 @@ struct FloatingTabBar: View {
                                     .matchedGeometryEffect(id: image, in: animation)
                                     .animation(Animation.linear(duration: 2.0))
                                     .offset(x: isSelectedTab ? -10 : 0, y: isSelectedTab ? -50: 0)
-                                
                             }
                             else {
                                 Image(systemName: image)
@@ -79,8 +84,6 @@ struct FloatingTabBar: View {
                                     .matchedGeometryEffect(id: image, in: animation)
                                     .animation(Animation.linear(duration: 2.0))
                                     .offset(x: isSelectedTab ? -10 : 0, y: isSelectedTab ? -50: 0)
-                                
-                                
                             }
                         })
                         .onAppear(perform: {
@@ -119,7 +122,11 @@ struct CustomShape: Shape {
         set { xAxis = newValue }
     }
     
+    private let xOffset: CGFloat = 50.0
+    private let controlXOffset: CGFloat = 30.0
+    
     func path(in rect: CGRect) -> Path {
+        
         return Path { path in
             path.move(to: CGPoint.zero)
             path.addLine(to: CGPoint(x: rect.width, y: 0))
@@ -128,15 +135,15 @@ struct CustomShape: Shape {
             
             let center = xAxis
             
-            path.move(to: CGPoint(x: center - 50, y: 0))
+            path.move(to: CGPoint(x: center - xOffset, y: 0))
             
-            let to1 = CGPoint(x: center, y: 30)
-            let control1 = CGPoint(x: center - 30, y: 0)
-            let control2 = CGPoint(x: center - 30, y: 30)
+            let to1 = CGPoint(x: center, y: controlXOffset)
+            let control1 = CGPoint(x: center - controlXOffset, y: 0)
+            let control2 = CGPoint(x: center - controlXOffset, y: controlXOffset)
             
-            let to2 = CGPoint(x: center + 50, y: 0)
-            let control3 = CGPoint(x: center + 30, y: 30)
-            let control4 = CGPoint(x: center + 30, y: 0)
+            let to2 = CGPoint(x: center + xOffset, y: 0)
+            let control3 = CGPoint(x: center + controlXOffset, y: controlXOffset)
+            let control4 = CGPoint(x: center + controlXOffset, y: 0)
             
             path.addCurve(to: to1, control1: control1, control2: control2)
             path.addCurve(to: to2, control1: control3, control2: control4)
