@@ -10,14 +10,20 @@ import SwiftUI
 struct FloatingTabBar: View {
     var tabs = ["house.fill", "arrow.triangle.2.circlepath", "person.fill"]
     
-    @State var selectedTab = "house.fill"
+    @State var selectedTab = "arrow.triangle.2.circlepath"
     
     // Location of each curve
     @State var xAxis: CGFloat = 0
     @Namespace var animation
     
+    
+    // Use to start button animatiion
+    @State var isAnimating = false
+    
+    
     // Button dimension
     let buttonDimension = 22.0
+    
     
     init() {
         UITabBar.appearance().isHidden = true
@@ -43,25 +49,45 @@ struct FloatingTabBar: View {
                     let isSelectedTab: Bool = selectedTab == image
                     GeometryReader { reader in
                         Button(action: {
-                            selectedTab = image
-                            xAxis = reader.frame(in: .global).minX
+                            if image == "arrow.triangle.2.circlepath" {
+                                isAnimating.toggle()
+                            }
                         }, label:{
-                            Image(systemName: image)
-                                .resizable()
-                                .renderingMode(.template)
-                                .aspectRatio(contentMode: .fill)
-                                .frame(width: buttonDimension, height:  buttonDimension)
-                                .foregroundColor(isSelectedTab ? .white: .black)
-                                .padding(isSelectedTab ? 15.0 : 0.0)
-                                .background(Color.orange.opacity(isSelectedTab ? 1 : 0).clipShape(Circle()))
-                                .matchedGeometryEffect(id: image, in: animation)
-                                .offset(x: isSelectedTab ? -10 : 0, y: isSelectedTab ? -50: 0)
+                            if isAnimating {
+                                Image(systemName: image == "arrow.triangle.2.circlepath" ? "checkmark" : image)
+                                    .resizable()
+                                    .renderingMode(.template)
+                                    .aspectRatio(contentMode: .fill)
+                                    .frame(width: buttonDimension, height:  buttonDimension)
+                                    .foregroundColor(isSelectedTab ? .white: .black)
+                                    .padding(isSelectedTab ? 15.0 : 0.0)
+                                    .background(  Color.green.opacity(isSelectedTab ? 1 : 0).clipShape(Circle()))
+                                    .matchedGeometryEffect(id: image, in: animation)
+                                    .animation(Animation.linear(duration: 2.0))
+                                    .offset(x: isSelectedTab ? -10 : 0, y: isSelectedTab ? -50: 0)
+                                
+                            }
+                            else {
+                                Image(systemName: image)
+                                    .resizable()
+                                    .renderingMode(.template)
+                                    .aspectRatio(contentMode: .fill)
+                                    .frame(width: buttonDimension, height:  buttonDimension)
+                                    .foregroundColor(isSelectedTab ? .white: .black)
+                                    .padding(isSelectedTab ? 15.0 : 0.0)
+                                    .background( Color.orange.opacity(isSelectedTab ? 1 : 0).clipShape(Circle()))
+                                    .matchedGeometryEffect(id: image, in: animation)
+                                    .animation(Animation.linear(duration: 2.0))
+                                    .offset(x: isSelectedTab ? -10 : 0, y: isSelectedTab ? -50: 0)
+                                
+                                
+                            }
                         })
-                            .onAppear(perform: {
-                                if image == tabs.first {
-                                    xAxis = reader.frame(in: .global).minX
-                                }
-                            })
+                        .onAppear(perform: {
+                            if image == tabs[1] {
+                                xAxis = reader.frame(in: .global).minX
+                            }
+                        })
                     }
                     .frame(width: 25.0, height: 30.0)
                     if image != tabs.last { Spacer() }
